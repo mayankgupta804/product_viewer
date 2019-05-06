@@ -1,5 +1,25 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <h1>Hi, {{ user.username }}!</h1>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        {% if form.errors %}
+            {{ form.errors }}
+        {% endif %}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description(size=100) }}
+        </p>
+        <p>
+            {{ form.file.label }} <br>
+            {{ form.file() }}
+        </p>
+        <div class="wrapper">
+            <button class="btn waves-effect waves-light button send" type="submit">Upload</button><br>
+        </div>
+    </form>
 {% endblock %}
