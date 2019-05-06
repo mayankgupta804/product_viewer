@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 from logging.handlers import RotatingFileHandler
+from flask_uploads import UploadSet, configure_uploads
 
 import logging
 import os
@@ -23,6 +24,10 @@ app.logger.addHandler(file_handler)
 
 app.logger.setLevel(logging.INFO)
 app.logger.info('Starting App...')  
+
+# Configure the csv files uploading via Flask-Uploads
+csv = UploadSet('files', ('csv', ))
+configure_uploads(app, csv)
 
 from product_viewer_app import routes
 
