@@ -8,8 +8,8 @@ class Config(object):
     TOP_LEVEL_DIR="/Users/mayank/Documents/Flask Projects/product_viewer"
 
     # Uploads
-    UPLOADS_DEFAULT_DEST = TOP_LEVEL_DIR + '/project/static/csv/'
-    UPLOADS_DEFAULT_URL = 'http://127.0.0.1:5000/static/img/'
+    UPLOADS_DEFAULT_DEST = TOP_LEVEL_DIR + '/static/csv/'
+    UPLOADS_DEFAULT_URL = 'http://127.0.0.1:5000/static/csv/'
     
-    UPLOADED_CSV_DEST = TOP_LEVEL_DIR + '/project/static/csv/'
-    UPLOADED_CSV_URL = 'http://127.0.0.1:5000/static/img/'
+    UPLOADED_CSV_DEST = TOP_LEVEL_DIR + '/static/csv/'
+    UPLOADED_CSV_URL = 'http://127.0.0.1:5000/static/csv/'
