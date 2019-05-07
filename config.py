@@ -13,3 +13,5 @@ class Config(object):
     
     UPLOADED_CSV_DEST = TOP_LEVEL_DIR + '/static/csv/'
     UPLOADED_CSV_URL = 'http://127.0.0.1:5000/static/csv/'
+
+    MAX_CONTENT_LENGTH = 100 * 1024 * 1024
