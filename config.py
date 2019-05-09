@@ -15,3 +15,6 @@ class Config(object):
     UPLOADED_CSV_URL = 'http://127.0.0.1:5000/static/csv/'
 
     MAX_CONTENT_LENGTH = 100 * 1024 * 1024
+
+    CELERY_RESULTS_BACKEND = os.environ.get("REDIS_URL") or "redis://localhost:6379"
+    CELERY_BROKER_URL = os.environ.get("CLOUDAMQP_URL") or "amqp://localhost"

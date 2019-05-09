@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from config import Config
 from logging.handlers import RotatingFileHandler
 from flask_uploads import UploadSet, configure_uploads
+from celery import Celery
 
 import logging
 import os
@@ -12,6 +13,10 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# Configure celery for running background tasks
+celery = Celery(app.name)
+celery.conf.update(app.config)
 
 if not os.path.exists('logs'):
     os.mkdir('logs')
