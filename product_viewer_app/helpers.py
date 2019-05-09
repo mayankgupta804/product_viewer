@@ -13,8 +13,9 @@ def save_file(form):
         os.makedirs(upload_folder)
     upload_path = os.path.join(app.config.get("UPLOADED_CSV_DEST"), filename)
     file.save(upload_path)
-    save_file_meta_data(form, upload_path, filename)
+    file_id = save_file_meta_data(form, upload_path, filename)
     flash("{} uploaded successfully".format(filename))
+    return file_id
 
 def save_file_meta_data(form, upload_path, filename):
     file = FileMetaData()
@@ -24,3 +25,5 @@ def save_file_meta_data(form, upload_path, filename):
     file.filename = filename
     db.session.add(file)
     db.session.commit()
+    file_id = file.id
+    return file_id

@@ -10,11 +10,11 @@ import os
 def index():
     form = UploadForm()
     if form.validate_on_submit():
-        save_file(form)
-        return redirect(url_for("products"))
+        file_id = save_file(form)
+        return redirect(url_for("products", id=file_id))
     return render_template("index.html", title="ACME Inc. Product Viewer", form=form)
 
-@app.route("/products", methods=["GET", "POST"])
-def products():
-    save_product_data.delay()
+@app.route("/products/<int:id>", methods=["GET", "POST"])
+def products(id):
+    save_product_data.delay(id)
     return render_template("products.html")
