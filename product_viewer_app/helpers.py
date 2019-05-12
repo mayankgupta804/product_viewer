@@ -1,5 +1,7 @@
 from werkzeug.utils import secure_filename
 from flask import flash
+from sqlalchemy import create_engine, orm
+
 from product_viewer_app import app, db
 from .models import FileMetaData
 
@@ -32,3 +34,15 @@ def save_file_meta_data(form, upload_path, filename):
     db.session.commit()
     file_id = file.id
     return file_id
+
+def get_db_connection():
+    engine = create_engine(app.config.get("SQLALCHEMY_DATABASE_URI"))
+    connection = engine.connect()
+    return connection
+
+def get_file_object(file_id):
+    try:
+        file_obj = db.session.query(FileMetaData).filter_by(id=file_id).first()
+        return file_obj
+    except orm.exc.NoResultFound:
+        return None  

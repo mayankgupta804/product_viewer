@@ -1,9 +1,12 @@
 from flask import render_template, redirect, url_for, request, flash
 from werkzeug.utils import secure_filename
+from flask_paginate import Pagination, get_page_parameter
+from sqlalchemy import create_engine
+
 from product_viewer_app import app, db
 from .helpers import save_file, is_name_unique
 from .forms import UploadForm
-from .celery_tasks import save_product_data
+from .celery_tasks import save_product_data, fetch_paginated_results
 
 import os
 
@@ -15,13 +18,15 @@ def index():
         if is_name_unique(filename):
             file_id = save_file(form)
             save_product_data.delay(file_id)
-            return redirect(url_for("products"))
+            return redirect(url_for("products", file_id=file_id))
         else:
             flash("Please provide a different name.", category="error")    
     return render_template("index.html", title="ACME Inc. Product Viewer", form=form)
 
-@app.route("/products", methods=["GET", "POST"])
+@app.route("/products")
 def products():
+    file_id = int(request.args.get('file_id', ''))
+    fetch_paginated_results.delay(file_id)
     return render_template("products.html")
 
 @app.errorhandler(404)
