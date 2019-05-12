@@ -1,5 +1,34 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <h1>Files uploaded</h1>
+<a href="/products/delete_all" class="fancy">Click here to delete all the records</a>
+<hr>
+<table id="products" class="display" cellspacing="0" width="100%">
+    <col width="35%">
+    <col width="65%">
+    <thead>
+        <tr>
+            <th class="fancy">Index</th>
+            <th class="fancy">Name</th>
+            <th class="fancy">Description</th>
+            <th class="fancy">SKU</th> 
+            <th class="fancy">Active</th>           
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in products %}
+        <tr>
+            {% for _, value in item.items() %}
+                    <td class="fancy">{{ value }}</td>
+            {% endfor %}
+        </tr>    
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
+
+<script>
+$(document).ready(function() {
+    $('#products').DataTable();
+});
+</script> 

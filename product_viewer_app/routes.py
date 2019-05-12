@@ -19,36 +19,42 @@ def index():
         filename = secure_filename(form.file.data.filename)
         if is_name_unique(filename):
             file_id = save_file(form)
-            r.set(file_id, "incomplete")
             save_product_data.delay(file_id)
+            fetch_paginated_results.delay(file_id)
             return render_template("loader.html", file_id=file_id)
         else:
             flash("Please provide a different name.", category="error")    
     return render_template("index.html", title="ACME Inc. Product Viewer", form=form)
 
 @app.route("/products")
-def products():     
-    return render_template("products.html") 
+def products():
+    file_id = request.args.get('file_id', '')
+    result = json.loads(r.get(file_id))
+    new_result = []
+    for item in result:
+        res = {}
+        for key, val in item.items():
+            res[str(key)] = str(val)
+        new_result.append(res)
+    return render_template("products.html", products=new_result) 
 
 @app.route("/products/fetch")
 def fetch_all_products():
     file_id = request.args.get('file_id', '')
-    fetch_paginated_results.delay(file_id)
     result = r.get(file_id).decode("utf-8")
-    if result is "incomplete" or len(result)==0:
+    if result is "incomplete":
         response = app.response_class(
             response=json.dumps("incomplete"),
             status=200,
             mimetype="application/json"
         )
-        return response
     else:
         response = app.response_class(
             response=json.dumps(result),
             status=200,
             mimetype="application/json",
         )
-        return response
+    return response
 
 @app.route("/products/<int:index>", methods=["GET", "PUT", "DELETE"])
 def operate_on_product(index):

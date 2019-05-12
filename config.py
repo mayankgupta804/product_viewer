@@ -16,5 +16,5 @@ class Config(object):
 
     MAX_CONTENT_LENGTH = 100 * 1024 * 1024
 
-    CELERY_RESULTS_BACKEND = "amqp"
+    CELERY_RESULTS_BACKEND = os.environ.get("REDIS_URL") or "amqp"
     CELERY_BROKER_URL = os.environ.get("CLOUDAMQP_URL") or "amqp://localhost"

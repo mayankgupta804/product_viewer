@@ -10,9 +10,9 @@ import json
 import redis
 
 # Configure redis for caching
-r = redis.Redis(host="localhost", port=6379, db=0)
+r = redis.StrictRedis()
 
-@celery.task(bind=True, default_retry_delay=30, max_retries=60, acks_late=True)
+@celery.task(bind=True, default_retry_delay=10, max_retries=20, acks_late=True)
 def save_product_data(self, file_id, *args, **kwargs):
     try:
         csv_obj = db.session.query(FileMetaData).filter_by(id=file_id).first()
@@ -28,14 +28,17 @@ def save_product_data(self, file_id, *args, **kwargs):
     except orm.exc.NoResultFound as e:
         self.retry(exc=e)        
 
-@celery.task(bind=True, default_retry_delay=30, max_retries=60, acks_late=True)
+@celery.task(bind=True, default_retry_delay=10, max_retries=20, acks_late=True)
 def fetch_paginated_results(self, file_id, *args, **kwargs):
+    r.set(file_id, "incomplete")
     file_obj = get_file_object(file_id)
     connection = get_db_connection()
     fetch_products_query = "SELECT * FROM {} LIMIT {}".format(file_obj.filename, 10)
     try:
-        result = connection.execute(fetch_products_query)
+        query_result = connection.execute(fetch_products_query)
     except Exception as e:
         self.retry(exc=e)
-    r.set(file_id, json.dumps([(dict(row.items())) for row in result]))
-    
+    result = []  
+    for row in query_result:
+        result.append(dict(row.items()))
+    r.set(file_id, json.dumps(result))    

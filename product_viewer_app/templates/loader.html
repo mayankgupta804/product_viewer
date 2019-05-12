@@ -67,8 +67,8 @@ h2.headertext {
     const res = await fetch('/products/fetch?file_id=' + file_id)
     const data = await res.json()
     console.log(data)
-    if (data.response != 'incomplete') {
-      window.location.replace('/products')
+    if (data != 'incomplete') {
+      window.location.replace('/products?file_id=' + file_id)
     }
     setTimeout(fetchProducts, 5000)
   }, 5000)

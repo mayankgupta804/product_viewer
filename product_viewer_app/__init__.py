@@ -16,10 +16,11 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 # Configure celery for running background tasks
-celery = Celery(app.name, backend=app.config.get("CELERY_RESULTS_BACKEND"), broker=app.config.get("CELERY_BROKER_URL"))
+celery = Celery(app.name)
+celery.conf.update(app.config)
 
 # Configure redis for caching
-r = redis.Redis(host="localhost", port=6379, db=0)
+r = redis.StrictRedis()
 
 if not os.path.exists('logs'):
     os.mkdir('logs')
