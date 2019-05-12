@@ -6,6 +6,11 @@ from .helpers import get_db_connection, get_file_object
 
 import pandas as pd
 import time
+import json
+import redis
+
+# Configure redis for caching
+r = redis.Redis(host="localhost", port=6379, db=0)
 
 @celery.task(bind=True, default_retry_delay=30, max_retries=60, acks_late=True)
 def save_product_data(self, file_id, *args, **kwargs):
@@ -32,4 +37,5 @@ def fetch_paginated_results(self, file_id, *args, **kwargs):
         result = connection.execute(fetch_products_query)
     except Exception as e:
         self.retry(exc=e)
-    print(result)
+    r.set(file_id, json.dumps([(dict(row.items())) for row in result]))
+    
