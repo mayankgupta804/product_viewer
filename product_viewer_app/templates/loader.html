@@ -38,11 +38,7 @@ h2.headertext {
   font-size: 48px;
 }
 
-#owner {
-  visibility: hidden;
-}
-
-#repository {
+#file_id {
   visibility: hidden;
 }
 
@@ -50,7 +46,7 @@ h2.headertext {
 </head>
 <body>
 
-<h2 class="headertext">Please wait while we are loading the data...</h2>
+<h2 class="headertext">Please wait while the data is being loaded...</h2>
 
 <div class="loader"></div>
 
@@ -61,7 +57,6 @@ h2.headertext {
 
 <script>
   var file_id = document.getElementById("file_id").textContent
-  console.log(file_id);
   
   setTimeout(async function fetchProducts() {
     const res = await fetch('/products/fetch?file_id=' + file_id)

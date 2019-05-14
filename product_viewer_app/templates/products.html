@@ -1,8 +1,9 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<a href="/products/delete_all" class="fancy">Click here to delete all the records</a>
+<button type="button" id="delete" onclick="deleteAllProducts()">Click here to delete all the records</button>
 <hr>
+<p style="visibility:hidden" id="file_id">{{ file_id }}</p>
 <table id="products" class="display" cellspacing="0" width="100%">
     <col width="35%">
     <col width="65%">
@@ -10,8 +11,8 @@
         <tr>
             <th class="fancy">Index</th>
             <th class="fancy">Name</th>
-            <th class="fancy">Description</th>
             <th class="fancy">SKU</th> 
+            <th class="fancy">Description</th>
             <th class="fancy">Active</th>           
         </tr>
     </thead>
@@ -19,16 +20,22 @@
         {% for item in products %}
         <tr>
             {% for _, value in item.items() %}
-                    <td class="fancy">{{ value }}</td>
+                <td class="fancy">{{ value }}</td>
             {% endfor %}
         </tr>    
         {% endfor %}
     </tbody>
 </table>
+<script type="text/javascript">
+    var file_id = document.getElementById("file_id").textContent
+    async function deleteAllProducts() {
+        const res = await fetch('/products?file_id=' + file_id, {method:'delete'})
+        const data = res.json()
+        alert("All products have been deleted!")
+        console.log(data);
+        if (data != 'yeah') {
+            window.location.replace('/')
+        }
+    }    
+</script>
 {% endblock %}
-
-<script>
-$(document).ready(function() {
-    $('#products').DataTable();
-});
-</script> 

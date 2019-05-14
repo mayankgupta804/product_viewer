@@ -29,11 +29,12 @@ def save_product_data(self, file_id, *args, **kwargs):
         self.retry(exc=e)        
 
 @celery.task(bind=True, default_retry_delay=10, max_retries=20, acks_late=True)
-def fetch_paginated_results(self, file_id, *args, **kwargs):
+def fetch_paginated_results(self, file_id, page_num=0, *args, **kwargs):
     r.set(file_id, "incomplete")
     file_obj = get_file_object(file_id)
     connection = get_db_connection()
-    fetch_products_query = "SELECT * FROM {} LIMIT {}".format(file_obj.filename, 10)
+    page_size = 25
+    fetch_products_query = "SELECT * FROM {} LIMIT {} OFFSET {}".format(file_obj.filename, page_size, page_num*page_size)
     try:
         query_result = connection.execute(fetch_products_query)
     except Exception as e:
@@ -42,3 +43,19 @@ def fetch_paginated_results(self, file_id, *args, **kwargs):
     for row in query_result:
         result.append(dict(row.items()))
     r.set(file_id, json.dumps(result))    
+
+@celery.task(bind=True, default_retry_delay=10, max_retries=20, acks_late=True)
+def delete_all_products(self, file_id):
+    # Get details of table that needs to be deleted
+    file_obj = get_file_object(file_id)
+    
+    connection = get_db_connection()
+    delete_query = "DROP TABLE {}".format(file_obj.filename)
+    try:
+        query_result = connection.execute(delete_query)
+    except Exception as e:
+        self.retry(exc=e)
+
+    # Remove all file metadata    
+    db.session.query(FileMetaData).filter_by(id=file_id).delete()
+    db.session.commit()    
